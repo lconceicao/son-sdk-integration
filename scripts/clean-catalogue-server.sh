@@ -14,8 +14,6 @@ curl -L http://github.com/micha/resty/raw/master/resty > resty
 resty http://$1:$2
 
 
-#POST /vnfs -H "Content-Type: application/x-yaml" < iperf-vnfd.yml
-
 # delete components from son-catalogue server
 {
 DELETE /network-services/id/eu.sonata-nfv.service-descriptor.sonata-demo.0.2
@@ -28,3 +26,4 @@ DELETE /vnfs/id/eu.sonata-nfv.vnf-sample.0.1
 
 # cleanup
 rm resty
+

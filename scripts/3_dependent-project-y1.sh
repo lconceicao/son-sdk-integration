@@ -6,12 +6,7 @@
 # should be created
 #
 
-# Verify vars and arguments
-
-if [ "$SON_WORKDIR" == "" ]; then
-        echo "Need to set SON_WORKDIR (location of son-workspace, son-package, son-publish, son-push)"
-        exit 1
-fi
+# Check arguments
 
 if [[ $# < 2 ]] || [[ $# > 3 ]]; then
         echo "Usage: `basename "$0"` <workspace_location> <project_location> [<project template>]"
@@ -25,27 +20,30 @@ elif [[ $# == 3 ]]; then
         project_template=$3
 fi
 
+
 # Define global parameters
-eval SON_WORKDIR=$SON_WORKDIR
 set -xe
 timestamp="$(date +%s).$(date +%N)"
-package_dir="packages.$timestamp"
+package_dir="packages/package.$timestamp"
+
 
 # Create project
 
 if [[ "$new_project" = true ]]; then
-        $SON_WORKDIR/son-workspace --workspace $1 --project $2
+        son-workspace --workspace $1 --project $2
 else 
         # Create predefined project. Make project incomplete, remove some VNFs
         unzip -o $project_template
         mv project-Y1 $2
-	rm -rf $2/sources/vnf/firewall
-	rm -rf $2/sources/vnf/iperf
+	rm $2/sources/vnf/firewall/firewall-vnfd.yml
+	rm -d $2/sources/vnf/firewall/firewall
+	rm $2/sources/vnf/iperf/iperf-vnfd.yml
+	rm -d $2/sources/vnf/iperf
 fi
 
 # Package project
-$SON_WORKDIR/son-package --workspace $1 --project $2 -d $package_dir -n project-Y1
+son-package --workspace $1 --project $2 -d $package_dir -n project-Y1
 
-# Push packaged project to Gatekeeper
-$SON_WORKDIR/son-push http://127.0.0.1:5000 -U $package_dir/project-Y1.son
+# Push packaged project to Gatekeeper #### DISABLE PUSH, FOR NOW
+#son-push http://127.0.0.1:5000 -U $package_dir/project-Y1.son
 
